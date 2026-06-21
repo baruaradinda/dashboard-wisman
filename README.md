@@ -2,7 +2,7 @@
 
 > Dashboard tren kunjungan wisatawan mancanegara (wisman) ke Indonesia 2018–2024, dengan data dari Badan Pusat Statistik (BPS).
 
-🌐 Demo: https://Kelompook-5.vercel.app  ← ganti dengan URL Vercel kelompokmu
+🌐 Demo: https://Kelompook-5.vercel.app  
 
 ## Isi Dashboard
 
@@ -25,11 +25,6 @@
 >   Kualanamu); Batam = 1,33 jt (resmi). Angka pintu lain estimasi; konfirmasi di tabel BPS.
 > Angka yang masih estimasi tinggal diganti di array `dataNegara` & `dataPintu` pada `app.js`.
 
-## Cara Jalankan di Lokal
-
-# Jalur A (static):
-Buka index.html langsung di browser (atau pakai Live Server di VS Code)
-
 ## Teknologi
 
 - Chart.js (visualisasi)
@@ -37,7 +32,6 @@ Buka index.html langsung di browser (atau pakai Live Server di VS Code)
 - Vercel (deployment)
 
 ## Anggota
-
 - Dinda Cantika Putri Baruara (103012300135)
 - Lilia Gita Savitri (103012300181)
 - Bianka Rosa (103012300335)
