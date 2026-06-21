@@ -2,7 +2,7 @@
 
 > Dashboard tren kunjungan wisatawan mancanegara (wisman) ke Indonesia 2018–2024, dengan data dari Badan Pusat Statistik (BPS).
 
-🌐 Demo: https://Kelompook-5.vercel.app  
+🌐 Demo: https://dashboard-wisman.vercel.app/ 
 
 ## Isi Dashboard
 
