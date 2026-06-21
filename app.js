@@ -1,6 +1,6 @@
 /* ==========================================================================
    app.js — Logika dashboard wisman Indonesia
-   Berisi: (1) data, (2) animasi count-up KPI, (3) tiga chart, (4) filter.
+   Berisi: (1) data, (2) animasi count-up & reveal, (3) tiga chart, (4) filter.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -16,13 +16,14 @@ const dataTahun = {
 };
 
 // 10 negara asal wisman terbanyak, 2024 (untuk Bar Chart). Satuan: JUTA kunjungan.
-// [RESMI BPS 2024] -> Malaysia 2,2 jt (16,4%), Australia 1,6 jt (12%), Singapura 1,4 jt (10,1%).
-// [ESTIMASI] -> Tiongkok dst belum dirilis BPS di siaran pers; konfirmasi di tabel BPS lalu ganti.
+// [RESMI BPS - Statistik Indonesia 2025] Total 13.902.420. Angka 5 besar PERSIS:
+//   Malaysia 2.278.281 | Australia 1.671.222 | Singapura 1.408.015 | Tiongkok 1.198.582 | Timor Leste 776.294
+// [ESTIMASI] rank 6-10 (India dst) belum dirilis detail; konfirmasi di tabel BPS lalu ganti.
 const dataNegara = {
-  labels: ['Malaysia', 'Australia', 'Singapura', 'Tiongkok', 'India',
-           'Timor Leste', 'Korea Selatan', 'Amerika Serikat', 'Inggris', 'Jepang'],
-  nilai:  [2.20, 1.60, 1.40, 1.00, 0.70, 0.65, 0.50, 0.45, 0.42, 0.40],
-  //        ^resmi ^resmi ^resmi  ^----------- estimasi, konfirmasi di tabel BPS ------------^
+  labels: ['Malaysia', 'Australia', 'Singapura', 'Tiongkok', 'Timor Leste',
+           'India', 'Korea Selatan', 'Inggris', 'Amerika Serikat', 'Jepang'],
+  nilai:  [2.28, 1.67, 1.41, 1.20, 0.78, 0.55, 0.45, 0.42, 0.40, 0.38],
+  //        ^---------- RESMI BPS (5 besar) ----------^  ^------ estimasi, konfirmasi ------^
 };
 
 // Pintu masuk utama wisman, 2024 (untuk Doughnut Chart). Satuan: JUTA kunjungan.
@@ -45,30 +46,63 @@ const WARNA = {
 
 
 /* --------------------------------------------------------------------------
-   2. ANIMASI COUNT-UP
-   Angka KPI naik dari 0 ke nilai akhir saat halaman dibuka.
+   2. ANIMASI
+   (a) COUNT-UP: angka KPI naik dari 0 ke nilai akhir.
+   (b) REVEAL: kartu & chart fade-in saat di-scroll masuk layar, fade-out saat keluar.
+   Keduanya dipicu oleh IntersectionObserver, yaitu fitur browser yang memberi tahu
+   kita kapan sebuah elemen masuk/keluar area layar (viewport).
    -------------------------------------------------------------------------- */
+
+// Catatan: kelas .has-js sudah ditambahkan ke <html> lewat script kecil di <head>
+// (supaya elemen tidak berkedip). CSS memakai penanda itu untuk menyiapkan animasi.
+
+// Format angka gaya Indonesia (koma sebagai pemisah desimal)
+function formatAngka(nilai, desimal) {
+  return nilai.toLocaleString('id-ID', {
+    minimumFractionDigits: desimal,
+    maximumFractionDigits: desimal,
+  });
+}
+
+// ---- (a) Fungsi animasi count-up untuk satu angka KPI ----
 function jalankanCountUp(el) {
   const target = parseFloat(el.dataset.target);          // nilai akhir
-  const desimal = parseInt(el.dataset.decimals || '0');  // jumlah angka di belakang koma
+  const desimal = parseInt(el.dataset.decimals || '0');  // angka di belakang koma
   const durasi = 1400;                                   // lama animasi (ms)
   const mulai = performance.now();
 
   function langkah(waktu) {
     const progres = Math.min((waktu - mulai) / durasi, 1); // 0 -> 1
-    const sekarang = target * progres;
-    // toLocaleString('id-ID') memakai koma sebagai pemisah desimal (gaya Indonesia)
-    el.textContent = sekarang.toLocaleString('id-ID', {
-      minimumFractionDigits: desimal,
-      maximumFractionDigits: desimal,
-    });
-    if (progres < 1) requestAnimationFrame(langkah); // ulangi sampai selesai
+    el.textContent = formatAngka(target * progres, desimal);
+    if (progres < 1) requestAnimationFrame(langkah);       // ulangi tiap frame
   }
   requestAnimationFrame(langkah);
 }
 
-// Jalankan count-up untuk semua angka KPI
-document.querySelectorAll('.kpi-value').forEach(jalankanCountUp);
+// Observer untuk KPI: hitung naik saat masuk layar, reset ke 0 saat keluar
+// (reset membuat animasi bisa diputar ulang setiap kali di-scroll — enak untuk demo)
+const kpiObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    const el = entry.target;
+    if (entry.isIntersecting) {
+      jalankanCountUp(el);                 // masuk layar -> animasikan
+    } else {
+      el.textContent = formatAngka(0, parseInt(el.dataset.decimals || '0')); // keluar -> reset 0
+    }
+  });
+}, { threshold: 0.5 }); // picu saat 50% elemen terlihat
+
+document.querySelectorAll('.kpi-value').forEach((el) => kpiObserver.observe(el));
+
+// ---- (b) Observer untuk REVEAL: tambah/lepas kelas .is-visible ----
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    // masuk layar -> tampilkan (fade-in); keluar layar -> sembunyikan lagi (fade-out)
+    entry.target.classList.toggle('is-visible', entry.isIntersecting);
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.fade-in').forEach((el) => revealObserver.observe(el));
 
 
 /* --------------------------------------------------------------------------
