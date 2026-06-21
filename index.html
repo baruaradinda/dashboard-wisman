@@ -15,6 +15,9 @@
   <!-- Chart.js diambil dari CDN (sesuai instruksi tugas) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
+  <!-- Tandai JS aktif sedini mungkin agar elemen tidak berkedip saat dimuat -->
+  <script>document.documentElement.classList.add('has-js');</script>
+
   <!-- File CSS kita sendiri -->
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -79,7 +82,7 @@
       <div class="panel-head">
         <div>
           <h2 class="panel-title">10 Negara Asal Terbanyak</h2>
-          <p class="panel-desc">Kunjungan 2024 (juta). Top-3 angka resmi BPS.</p>
+          <p class="panel-desc">Kunjungan 2024 (juta). 5 besar angka resmi BPS.</p>
         </div>
       </div>
       <div class="chart-box">
